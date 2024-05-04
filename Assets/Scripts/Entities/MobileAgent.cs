@@ -1,14 +1,22 @@
 ﻿using Locals;
+using UnityEngine.AI;
+using UnityTimer;
 
 namespace Entities
 {
     public abstract class MobileAgent : Agent
     {
-        private int _timer;
-
+        public NavMeshAgent agent;
         public Destination initialDestination;
-        private Destination _currentDestination;
+        
+        protected Timer Timer;
+        protected Destination CurrentDestination;
 
-        public abstract Destination ChooseRandomDestination(); //using DT
+        public abstract Destination GetRandomDestination();
+
+        public virtual void Start()
+        {
+            CurrentDestination = initialDestination;
+        }
     }
 }

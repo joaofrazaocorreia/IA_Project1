@@ -10,7 +10,7 @@ namespace Entities
         public override void Start()
         {
             base.Start();
-            Timer = Timer.Register(SimulationManager.Instance.vehicleDestinationMaxTime, ChooseRandomDestination, 
+            Timer = Timer.Register(SimulationManager.instance.vehicleDestinationMaxTime, ChooseRandomDestination, 
             isLooped: true);
             CurrentDestination.EnterDestination(this);
         }
@@ -27,8 +27,8 @@ namespace Entities
 
         public override Destination GetRandomDestination()
         {
-            return SimulationManager.Instance.allDestinations[Random.Range(0, 
-                SimulationManager.Instance.allDestinations.Count)];
+            return SimulationManager.instance.allDestinations[Random.Range(0, 
+                SimulationManager.instance.allDestinations.Count)];
         }
     }
 }

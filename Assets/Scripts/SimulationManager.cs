@@ -7,6 +7,8 @@ namespace Manager
 {
     public class SimulationManager : MonoBehaviour
     {
+        public static SimulationManager instance { get; private set; }
+        
         public int numberOfVehicles;
         public int numberOfPedestrians;
         public float vehicleDestinationMaxTime;
@@ -18,5 +20,16 @@ namespace Manager
 
         private Timer _accidentTimer;
         private Timer _uncontrolledTimer;
+        
+        private void Awake()
+        {
+            if (instance != null && instance != this)
+            {
+                Destroy(this);
+                return;
+            }
+
+            instance = this;
+        }
     }
 }

@@ -124,7 +124,11 @@ namespace Entities
         /// </summary>
         public void Resume()
         {
-            agent.velocity = _vel;
+            if (isUncontrolled)
+                agent.velocity = _vel * maxSpeed;
+
+            else
+                agent.velocity = _vel;
         }
 
         /// <summary>
@@ -134,7 +138,11 @@ namespace Entities
         /// </summary> 
         public void Wait()
         {
-            agent.velocity = Vector3.zero;
+            if (isUncontrolled)
+                Resume();
+
+            else
+                agent.velocity = Vector3.zero;
         }
 
         /// <summary>
@@ -154,30 +162,34 @@ namespace Entities
             // - normal: stops, waits
             // - erratic: starts crossing the street
             
-            if (_madeDecision) 
-                return;
-            
-            _madeDecision = true;
-            
-            RandomDecisionBehaviour rdb = new RandomDecisionBehaviour(() =>
-                Random.Range(0, 1), () => Time.time, 4);
+            if (isUncontrolled)
+                Resume();
 
-            DecisionNode crossingStreet = new DecisionNode(rdb.RandomDecision,
-                new ActionNode(delegate {  }), new ActionNode(Wait));
-            
-            DecisionNode notCrossingStreet = new DecisionNode(rdb.RandomDecision,
-                new ActionNode(Wait), new ActionNode(delegate {  }));
+            else
+                if (_madeDecision) 
+                    return;
+                
+                _madeDecision = true;
+                
+                RandomDecisionBehaviour rdb = new RandomDecisionBehaviour(() =>
+                    Random.Range(0, 1), () => Time.time, 4);
 
-            DecisionNode checkCrossingNode = new DecisionNode
-            (
-                () => isOnCrossroad, 
-                crossingStreet,
-                notCrossingStreet
-            );
-            
-            _root = checkCrossingNode;
-            
-            (_root.MakeDecision() as ActionNode)?.Execute();
+                DecisionNode crossingStreet = new DecisionNode(rdb.RandomDecision,
+                    new ActionNode(delegate {  }), new ActionNode(Wait));
+                
+                DecisionNode notCrossingStreet = new DecisionNode(rdb.RandomDecision,
+                    new ActionNode(Wait), new ActionNode(delegate {  }));
+
+                DecisionNode checkCrossingNode = new DecisionNode
+                (
+                    () => isOnCrossroad, 
+                    crossingStreet,
+                    notCrossingStreet
+                );
+                
+                _root = checkCrossingNode;
+                
+                (_root.MakeDecision() as ActionNode)?.Execute();
         }
     }
 }

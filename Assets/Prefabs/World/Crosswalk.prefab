@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7303255955627725294}
   - component: {fileID: 8583184164441836480}
   - component: {fileID: 3294566274855469034}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 8941243719188063161}
   - component: {fileID: 6194786288305533865}
   - component: {fileID: 2072759890830617705}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Traffic Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 4579140910275922641}
   - component: {fileID: 3988600248554652988}
   - component: {fileID: 8858939824199067992}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Bg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -264,6 +264,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: 0db0f3b36bc598e468ee7a4b227f5bd4, type: 3}
       propertyPath: m_Name
       value: Crosswalk
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 0db0f3b36bc598e468ee7a4b227f5bd4, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 0db0f3b36bc598e468ee7a4b227f5bd4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -363,6 +367,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrafficLight
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 4a02f158a38dde74999d8bca87a2ed05, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 4a02f158a38dde74999d8bca87a2ed05, type: 3}
       propertyPath: m_LocalPosition.x
       value: -11.470001
@@ -442,3 +450,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   signal: {fileID: 2072759890830617705}
   maxDistance: 10
+  timeBeforeStateChange: 1.5

@@ -20,33 +20,69 @@ namespace Entities
         private IDecisionTreeNode _root;
         private IDecisionTreeNode _current;
         
-        public override void Start()
+        private Destination _nextDestination;
+        
+        /// <summary> Sets the speed of the agent to 20% of its maxSpeed,        
+        /// registers the timer, and overall initiates the agent.
+        /// </summary>
+        ///
+        /// <param name="destination"> The destination to start at.</param>
+        public void Init(Destination destination)
         {
-            base.Start();
-            agent.speed = maxSpeed * .02f;
-            Timer = Timer.Register(SimulationManager.instance.pedestrianDestinationMaxTime, ChooseRandomDestination, 
-                isLooped: true);
+            agent.speed = maxSpeed * .2f;
+            Timer = Timer.Register(SimulationManager.instance.pedestrianDestinationMaxTime, LeaveCurrentDestination);
+            
             isOnDestination = true;
+            CurrentDestination = destination;
             CurrentDestination.EnterDestination(this);
             _vel = agent.velocity;
+            
+            agent.enabled = CurrentDestination == null;
+            GetComponent<Renderer>().enabled = CurrentDestination == null;
+            _nextDestination = GetRandomDestination();
         }
         
-        
+        /// <summary>
+        /// Called when the pedestrian enters a destination.        
+        /// Sets the timer to leave the current destination, and calls EnterDestination on _nextDestination.
+        /// </summary>
+        private void EnterDestination()
+        {
+            if (CurrentDestination == null)
+            {
+                Debug.LogError("Error: Current destination is null when entering destination.");
+                return;
+            }
+	        
+            Debug.Log($"Entered destination. Current destination: {CurrentDestination}, " +
+                      $"Next destination: {_nextDestination}");
+	        
+            Timer = Timer.Register(SimulationManager.instance.pedestrianDestinationMaxTime, LeaveCurrentDestination);
+	        
+            _nextDestination.EnterDestination(this);
+            
+            agent.enabled = false;
+            GetComponent<Renderer>().enabled = false;
+	        
+            CurrentDestination = _nextDestination;
+        }
+
         /// <summary>
         /// Chooses a random destination for the pedestrian to go to.        
         /// It also sets the agent's position and rotation to that of the current destination's exit point, 
         /// then calls LeaveDestination on CurrentDestination.
         /// </summary>
-        private void ChooseRandomDestination()
+        private void LeaveCurrentDestination()
         {
             transform.SetPositionAndRotation(CurrentDestination.pedestrianExitPoint.position, 
-                CurrentDestination.pedestrianExitPoint.rotation);
+                Quaternion.identity);
+            GetComponent<Renderer>().enabled = true;
             CurrentDestination.LeaveDestination(this);
             isOnDestination = false;
             
-            CurrentDestination = GetRandomDestination();
-            agent.Move(CurrentDestination.position);
-            Timer.Pause();
+            CurrentDestination = null;
+            _nextDestination = GetRandomDestination();
+            agent.destination = _nextDestination.position;
         }
 
         
@@ -63,18 +99,15 @@ namespace Entities
 
         private void Update()
         {
-            if (!isOnDestination)
+            if (agent.enabled && agent.isOnNavMesh)
             {
-                if (!agent.pathPending)
+                if (CurrentDestination == null && _nextDestination != null)
                 {
-                    if (agent.remainingDistance <= agent.stoppingDistance)
+                    float distanceToDestination = Vector3.Distance(transform.position, _nextDestination.position);
+            
+                    if (distanceToDestination < 5f)
                     {
-                        if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
-                        {
-                            CurrentDestination.EnterDestination(this);
-                            isOnDestination = true;
-                            Timer.Resume();
-                        }
+                        EnterDestination();
                     }
                 }
             }

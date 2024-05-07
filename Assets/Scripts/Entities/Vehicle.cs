@@ -20,16 +20,54 @@ namespace Entities
         
         private bool _madeDecision;
         private bool _isWaiting;
+        private Destination _nextDestination;
         
         private IDecisionTreeNode _root;
         private IDecisionTreeNode _current;
 
-        public override void Start()
+        /// <summary>
+        /// Sets up the vehicle's initial state, including its destination and speed.
+        /// </summary>
+        ///
+        /// <param name="destination"> The destination to start at.</param>
+        public void Init(Destination destination)
         {
-            base.Start();
-            Timer = Timer.Register(SimulationManager.instance.vehicleDestinationMaxTime, ChooseRandomDestination, 
-            isLooped: true);
+            Timer = Timer.Register(SimulationManager.instance.vehicleDestinationMaxTime, LeaveCurrentDestination);
+            
+            agent.speed = maxSpeed * .2f;
+            CurrentDestination = destination;
+            
+            agent.enabled = CurrentDestination == null;
+            GetComponent<Renderer>().enabled = CurrentDestination == null;
+            
             CurrentDestination.EnterDestination(this);
+            _nextDestination = GetRandomDestination();
+        }
+
+        /// <summary>
+        /// Called when the vehicle enters a destination.        
+        /// It sets the timer to leave the current destination, and calls EnterDestination on _nextDestination.
+        /// </summary>
+        private void EnterDestination()
+        {
+            if (CurrentDestination == null)
+            {
+                Debug.LogError("Error: Current destination is null when entering destination.");
+                return;
+            }
+	        
+            Debug.Log($"Entered destination. Current destination: {CurrentDestination}, " +
+                      $"Next destination: {_nextDestination}");
+	        
+            Timer = Timer.Register(SimulationManager.instance.vehicleDestinationMaxTime, LeaveCurrentDestination);
+	        
+            _nextDestination.EnterDestination(this);
+            
+            agent.enabled = false;
+            GetComponent<Renderer>().enabled = false;
+	        
+            CurrentDestination = _nextDestination;
+            _nextDestination = GetRandomDestination();
         }
 
         /// <summary>
@@ -39,14 +77,17 @@ namespace Entities
         /// </summary>
         ///
         /// <param name="road"> The road the vehicle is on.</param>
-        /// <param name="connector"> The connector that the vehicle is currently on.</param>
-        private void SetOnRoad(RoadWaypoint road, RoadConnector connector)
+        private void SetOnRoad(RoadWaypoint road)
         {
+            if (road == null)
+            {
+                Debug.Log("Road is null.");
+            }
+            
             _currentRoad = road;
-            _currentConnector = connector;
-            
-            road.RegisterVehicle(this, true);
-            
+            _currentRoad.RegisterVehicle(this, true);
+
+            agent.enabled = true;
             agent.speed = Mathf.Min(road.roadSpeedLimit, maxSpeed) * .02f;
         }
 
@@ -56,17 +97,20 @@ namespace Entities
         /// current destination's exit point, then it sets itself on road using that exit point's
         /// waypointToConnect and itself as parameters. 
         /// </summary>
-        private void ChooseRandomDestination()
+        private void LeaveCurrentDestination()
         {
-            transform.SetPositionAndRotation(CurrentDestination.vehicleExitPoint.transform.position, 
-                CurrentDestination.vehicleExitPoint.transform.rotation);
-            SetOnRoad(CurrentDestination.vehicleExitPoint.waypointToConnect, CurrentDestination.vehicleExitPoint);
+            transform.SetPositionAndRotation(CurrentDestination.vehicleExitPoint.vehicleSpawnPt.position, 
+                Quaternion.identity);
+            SetOnRoad(CurrentDestination.vehicleExitPoint);
+
+            GetComponent<Renderer>().enabled = true;
             
             CurrentDestination.LeaveDestination(this);
-            
-            CurrentDestination = GetRandomDestination();
-            
-            agent.Move(CurrentDestination.position);
+
+            CurrentDestination = null;
+            _nextDestination = GetRandomDestination();
+
+            agent.destination = _nextDestination.position;
         }
 
         /// <summary>
@@ -81,7 +125,7 @@ namespace Entities
 
         private void Update()
         {
-            if (!_isWaiting && agent.isOnNavMesh)
+            if (!_isWaiting && agent.enabled && agent.isOnNavMesh)
             {
                 if (CheckCollision())
                 {
@@ -90,6 +134,16 @@ namespace Entities
                 else
                 {
                     Resume();
+
+                    if (CurrentDestination == null && _nextDestination != null)
+                    {
+                        float distanceToDestination = Vector3.Distance(transform.position, _nextDestination.position);
+                
+                        if (distanceToDestination < 1f)
+                        {
+                            EnterDestination();
+                        }
+                    }
                 }
             }
         }
@@ -116,16 +170,6 @@ namespace Entities
         /// </summary>
         public void SlowDown()
         {
-            // possible behaviours:
-            //
-            // * there are agents passing the street
-            // - normal: waits
-            // - erratic: starts moving
-            // 
-            // * no agents on the street
-            // - normal: slows down, but crosses if there's enough time
-            
-            //to-be implemented
         }
         
         /// <summary>
@@ -142,7 +186,7 @@ namespace Entities
             {
                 if (Vector3.Distance(transform.position, hit.point) < stopDistance)
                 {
-                    if (hit.transform.CompareTag("Pedestrian"))
+                    if (hit.transform.CompareTag("Unit"))
                         return true;
                 }
                 
@@ -167,7 +211,7 @@ namespace Entities
                 {
                     _currentRoad.RegisterVehicle(this, false);
                     
-                    agent.speed = Mathf.Min(connection.waypointToConnect.roadSpeedLimit, maxSpeed) * .02f;
+                    agent.speed = Mathf.Min(connection.waypointToConnect.roadSpeedLimit, maxSpeed) * .2f;
                     _currentRoad = connection.waypointToConnect;
                     
                     _currentRoad.RegisterVehicle(this, true);

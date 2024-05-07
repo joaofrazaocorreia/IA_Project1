@@ -17,7 +17,7 @@ namespace Entities
         private Color _evaluateColor;
         
         private float _stateEnterTime;
-        public float timeBeforeStateChange = 1.5f; // Time for each state in seconds
+        public float timeBeforeStateChange = 20f; // Seconds between states
 
         private void Start()
         {
@@ -30,7 +30,7 @@ namespace Entities
                 "Green", 
                 () => OnEnterState(TrafficColors.Green), 
                 () => OnUpdateState(), 
-                () => OnExitState(TrafficColors.Green)
+                () => OnExitState()
                 );
             
             State orangeState = new State
@@ -38,7 +38,7 @@ namespace Entities
                 "Orange", 
                 () => OnEnterState(TrafficColors.Orange), 
                 () => OnUpdateState(), 
-                () => OnExitState(TrafficColors.Orange)
+                () => OnExitState()
             );
             
             State redState = new State
@@ -46,54 +46,54 @@ namespace Entities
                 "Red", 
                 () => OnEnterState(TrafficColors.Red), 
                 () => OnUpdateState(), 
-                () => OnExitState(TrafficColors.Red)
+                () => OnExitState()
             );
             
             //Init transitions
             
-            greenState.AddTransition(new Transition(ShouldChangeState, () => _stateEnterTime = Time.time, orangeState));
-            orangeState.AddTransition(new Transition(ShouldChangeState, () => _stateEnterTime = Time.time, redState));
-            redState.AddTransition(new Transition(ShouldChangeState, () => _stateEnterTime = Time.time, greenState));
+            greenState.AddTransition(new Transition(ShouldChangeState, () =>
+                _stateEnterTime = Time.time, orangeState));
+            orangeState.AddTransition(new Transition(ShouldChangeState, () =>
+                _stateEnterTime = Time.time, redState));
+            redState.AddTransition(new Transition(ShouldChangeState, () =>
+                _stateEnterTime = Time.time, greenState));
 
             StateMachine = new StateMachine(greenState);
         }
         
         /// <summary>
-        /// Checks if the time since entering the current state is greater than or equal
-        /// to the duration of that state.        
+        /// Checks if the time since entering the current state is greater than
+        /// or equal to the duration of that state. Shorter time is applied if
+        /// it's yellow.
         /// </summary>
         private bool ShouldChangeState()
         {
-            return Time.time - _stateEnterTime >= timeBeforeStateChange;
+            if(isUncontrolled)
+                return Time.time - _stateEnterTime >= 0.15;
+
+            else
+            {
+                if (_evaluateColor == Color.yellow)
+                    return Time.time - _stateEnterTime >= 
+                        timeBeforeStateChange * 0.15f;
+
+                else
+                    return Time.time - _stateEnterTime >= timeBeforeStateChange;
+            }
         }
 
         /// <summary>
         /// Called when the state machine exits a state.
         /// </summary>
-        private void OnExitState(TrafficColors trafficColor)
+        private void OnExitState()
         {
-            if (trafficColor == TrafficColors.Orange)
-            {
-                StartCoroutine(Blink(3));
-            }
+            
         }
 
         /// <summary>
-        /// Blinks the signal light a number of times, to simulate real life orange light behaviour.
-        /// </summary>        
-        /// <param name="int times"> The number of times the light will blink.</param>
-        private IEnumerator Blink(int times)
-        {
-            for (int i = 0; i < times; i++)
-            {
-                signal.enabled = !signal.enabled;
-                yield return new WaitForSeconds(0.5f);
-            }
-        }
-
-        /// <summary>
-        /// Called every frame. It checks the current color of the traffic light and then        
-        /// changes the state of all vehicles and pedestrians in range accordingly.
+        /// Called every frame. It checks the current color of the traffic light
+        /// and then changes the state of all vehicles and pedestrians in range
+        /// accordingly.
         /// </summary>
         private void OnUpdateState()
         {
@@ -156,20 +156,36 @@ namespace Entities
 
         /// <summary>
         /// Called when the state machine enters a new state.
-        /// The function sets the _evaluateColor variable to be equal to one of three colors
-        /// depending on what value was passed into it.
+        /// The function sets the _evaluateColor variable to be equal to one of
+        /// three colors depending on what value was passed into it.
         /// </summary>
         private void OnEnterState(TrafficColors trafficColor)
         {
-            _evaluateColor = trafficColor switch
+            if(isUncontrolled)
             {
-                TrafficColors.Green => Color.green,
-                TrafficColors.Orange => Color.yellow,
-                TrafficColors.Red => Color.red,
-                _ => _evaluateColor
-            };
+                signal.color = Random.Range(0, 3) switch
+                {
+                    0 => Color.yellow,
+                    1 => Color.red,
+                    2 => Color.green,
+                    _ => Color.green
+                };
+            }
 
-            signal.color = _evaluateColor;
+            else
+            {    
+                _evaluateColor = trafficColor switch
+                {
+                    TrafficColors.Green => Color.green,
+                    TrafficColors.Orange => Color.yellow,
+                    TrafficColors.Red => Color.red,
+                    _ => _evaluateColor
+                };
+
+                signal.color = _evaluateColor;
+            }
+
+            
         }
     }
 }

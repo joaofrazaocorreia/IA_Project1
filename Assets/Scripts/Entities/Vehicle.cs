@@ -13,7 +13,7 @@ namespace Entities
     [RequireComponent(typeof(Rigidbody))]
     public class Vehicle : MobileAgent, ITrafficLightListener
     {
-        public float stopDistance = .25f; //distance to stop from 'hitting' other vehicles
+        public float stopDistance = .25f; //distance to prevent 'hitting' others
         
         private RoadWaypoint _currentRoad;
         private RoadConnector _currentConnector;
@@ -26,19 +26,26 @@ namespace Entities
         private IDecisionTreeNode _current;
 
         /// <summary>
-        /// Sets up the vehicle's initial state, including its destination and speed.
+        /// Sets up the vehicle's initial state, including its destination and 
+        /// speed.
         /// </summary>
-        ///
         /// <param name="destination"> The destination to start at.</param>
         public void Init(Destination destination)
         {
-            Timer = Timer.Register(SimulationManager.instance.vehicleDestinationMaxTime, LeaveCurrentDestination);
+            Timer = Timer.Register(SimulationManager.instance.
+                vehicleDestinationMaxTime, LeaveCurrentDestination);
 
-            agent.speed = maxSpeed;
+            if (isUncontrolled)
+                agent.speed = maxSpeed * 2f;
+
+            else
+                agent.speed = maxSpeed * 0.2f;
+
             CurrentDestination = destination;
             
             agent.enabled = CurrentDestination == null;
-            GetComponentInChildren<Renderer>().enabled = CurrentDestination == null;
+            GetComponentInChildren<Renderer>().enabled =
+                CurrentDestination == null;
             
             CurrentDestination.EnterDestination(this);
             _nextDestination = GetRandomDestination();
@@ -46,20 +53,24 @@ namespace Entities
 
         /// <summary>
         /// Called when the vehicle enters a destination.        
-        /// It sets the timer to leave the current destination, and calls EnterDestination on _nextDestination.
+        /// It sets the timer to leave the current destination, and calls
+        /// EnterDestination on _nextDestination.
         /// </summary>
         private void EnterDestination()
         {
             if (CurrentDestination == null)
             {
-                Debug.LogError("Error: Current destination is null when entering destination.");
+                Debug.LogError("Error: Current destination is null when " +
+                    "entering destination.");
                 return;
             }
 	        
-            Debug.Log($"Entered destination. Current destination: {CurrentDestination}, " +
+            Debug.Log("Entered destination. Current destination: " +
+                $"{CurrentDestination}, " +
                       $"Next destination: {_nextDestination}");
 	        
-            Timer = Timer.Register(SimulationManager.instance.vehicleDestinationMaxTime, LeaveCurrentDestination);
+            Timer = Timer.Register(SimulationManager.instance.
+                vehicleDestinationMaxTime, LeaveCurrentDestination);
 	        
             _nextDestination.EnterDestination(this);
             
@@ -72,10 +83,10 @@ namespace Entities
 
         /// <summary>
         /// Sets the current road and connector for the vehicle.        
-        /// It also registers this vehicle with that road, and sets its speed to be either
-        /// the maximum speed of this vehicle or the speed limit of that road, whichever is lower.
+        /// It also registers this vehicle with that road, and sets its speed to
+        /// be either the maximum speed of this vehicle or the speed limit of
+        /// that road, whichever is lower.
         /// </summary>
-        ///
         /// <param name="road"> The road the vehicle is on.</param>
         private void SetOnRoad(RoadWaypoint road)
         {
@@ -93,14 +104,15 @@ namespace Entities
 
         /// <summary>
         /// Chooses a random destination for the vehicle to go to.        
-        /// It does this by first setting the position and rotation of the vehicle to that of its
-        /// current destination's exit point, then it sets itself on road using that exit point's
-        /// waypointToConnect and itself as parameters. 
+        /// It does this by first setting the position and rotation of the
+        /// vehicle to that of its current destination's exit point, then it
+        /// sets itself on road using that exit point's waypointToConnect and
+        /// itself as parameters. 
         /// </summary>
         private void LeaveCurrentDestination()
         {
-            transform.SetPositionAndRotation(CurrentDestination.vehicleExitPoint.vehicleSpawnPt.position, 
-                Quaternion.identity);
+            transform.SetPositionAndRotation(CurrentDestination.
+                vehicleExitPoint.vehicleSpawnPt.position, Quaternion.identity);
             SetOnRoad(CurrentDestination.vehicleExitPoint);
 
             GetComponentInChildren<Renderer>().enabled = true;
@@ -114,9 +126,10 @@ namespace Entities
         }
 
         /// <summary>
-        /// <see cref="Pedestrian.GetRandomDestination"/>
+        /// Chooses a random destination.
         /// </summary>
-        /// <returns></returns>
+        /// <returns> A random destination from the list of all destinations.
+        /// </returns>
         private Destination GetRandomDestination()
         {
             return SimulationManager.instance.allDestinations[Random.Range(0, 
@@ -131,13 +144,15 @@ namespace Entities
                 {
                     Wait();
                 }
+
                 else
                 {
                     Resume();
 
                     if (CurrentDestination == null && _nextDestination != null)
                     {
-                        float distanceToDestination = Vector3.Distance(transform.position, _nextDestination.position);
+                        float distanceToDestination = Vector3.Distance
+                            (transform.position, _nextDestination.position);
                 
                         if (distanceToDestination < 3f)
                         {
@@ -149,33 +164,54 @@ namespace Entities
         }
 
         /// <summary>
-        /// <see cref="Pedestrian.Resume"/>
+        /// Called when the traffic light this vehicle is affected by goes
+        /// 'green'. It sets the agent's velocity to what it was before pausing.
         /// </summary>
         public void Resume()
         {
+            _isWaiting = false;
             agent.isStopped = false;
+            
+            if (isUncontrolled)
+                agent.speed = maxSpeed;
         }
 
         /// <summary>
-        /// <see cref="Pedestrian.Wait"/>
-        /// </summary>
+        /// Called when the traffic light this vehicle is affected by goes
+        /// 'red'. Sets the agent's velocity to zero, which causes it to stop
+        /// moving.
+        /// </summary> 
         public void Wait()
         {
-            _isWaiting = true;
-            agent.isStopped = true;
+            if (isUncontrolled)
+                Resume();
+            
+            else
+            {
+                _isWaiting = true;
+                agent.isStopped = true;
+            }
         }
 
         /// <summary>
-        /// <see cref="Pedestrian.SlowDown"/>
+        /// Called when the traffic light this vehicle is affected by goes
+        /// 'orange'. It causes the agent to slow down.
         /// </summary>
         public void SlowDown()
         {
+            if (isUncontrolled)
+                Resume();
+
+            else
+                agent.speed = agent.speed * 0.3f;
         }
         
         /// <summary>
-        /// Checks if the car is within a certain distance of an object with the tag "Pedestrian".
+        /// Checks if the car is within a certain distance of an object with the
+        /// tag "Pedestrian".
         /// </summary>        
-        /// <returns> A boolean value. If the car is within a certain distance of the pedestrian, it returns true.
+        /// <returns> A boolean value. If the car is within a certain distance
+        /// of the pedestrian, it returns true.
         /// Otherwise, it returns false.</returns>
         private bool CheckCollision()
         {
@@ -198,8 +234,8 @@ namespace Entities
         
         /// <summary>
         /// Called when the vehicle enters a trigger collider.        
-        /// If the collider has a RoadConnector component, then it will register itself
-        /// with that connector's waypoint.
+        /// If the collider has a RoadConnector component, then it will register
+        /// itself with that connector's waypoint.
         /// </summary>
         public void OnTriggerEnter(Collider col)
         {
@@ -210,8 +246,14 @@ namespace Entities
                 if (connection.waypointToConnect != _currentRoad)
                 {
                     _currentRoad.RegisterVehicle(this, false);
-                    
-                    agent.speed = Mathf.Min(connection.waypointToConnect.roadSpeedLimit, maxSpeed) * .2f;
+
+                    if (isUncontrolled)
+                        agent.speed = maxSpeed;
+
+                    else
+                        agent.speed = Mathf.Min(connection.waypointToConnect.
+                            roadSpeedLimit, maxSpeed) * .2f;
+
                     _currentRoad = connection.waypointToConnect;
                     
                     _currentRoad.RegisterVehicle(this, true);

@@ -2,7 +2,7 @@
 using Entities;
 using Locals;
 using UnityEngine;
-using UnityTimer;
+using System.Linq;
 using Random = UnityEngine.Random;
 
 namespace Manager
@@ -25,9 +25,9 @@ namespace Manager
         
         public GameObject pedestrianPrefab;
         public GameObject vehiclePrefab;
+        public Material accidentColor;
 
-        private Timer _accidentTimer;
-        private Timer _uncontrolledTimer;
+        private List<Agent> agents;
         
         private void Awake()
         {
@@ -46,11 +46,14 @@ namespace Manager
         /// </summary>
         private void Start()
         {
+            agents = new List<Agent>();
+
             for (int p = 0; p < numberOfPedestrians; p++)
             {
                 Destination randomDestination = allDestinations[Random.Range(0, allDestinations.Count)];
                 Pedestrian pedestrian = Instantiate(pedestrianPrefab, randomDestination.position, 
                     Quaternion.identity).GetComponent<Pedestrian>();
+                agents.Add(pedestrian);
                 pedestrian.Init(randomDestination);
             }
             
@@ -59,7 +62,29 @@ namespace Manager
                 Destination randomDestination = allDestinations[Random.Range(0, allDestinations.Count)];
                 Vehicle vehicle = Instantiate(vehiclePrefab, randomDestination.position, 
                     Quaternion.identity).GetComponent<Vehicle>();
+                agents.Add(vehicle);
                 vehicle.Init(randomDestination);
+            }
+
+            foreach (TrafficLight tl in gameObject.
+                GetComponentsInChildren<TrafficLight>())
+            {
+                agents.Add(tl);
+            }
+        }
+
+        /// <summary>
+        /// Chooses a random agent in the scene to become Uncontrolled.
+        /// </summary>
+        public void UncontrolRandomAgent()
+        {
+            List<Agent> stableAgentsList = agents.Where
+                (a => !a.isUncontrolled).ToList();
+
+            if(stableAgentsList.Count > 0)
+            {
+                stableAgentsList[Random.Range(0, stableAgentsList.Count)].
+                    BecomeUncontrolled();
             }
         }
     }

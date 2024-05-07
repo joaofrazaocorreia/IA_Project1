@@ -32,8 +32,8 @@ namespace Entities
         /// <param name="destination"> The destination to start at.</param>
         public void Init(Destination destination)
         {
-            Timer = Timer.Register(SimulationManager.instance.
-                vehicleDestinationMaxTime, LeaveCurrentDestination);
+            Timer = Timer.Register(Random.Range(0f, SimulationManager.instance.
+                vehicleDestinationMaxTime), LeaveCurrentDestination);
 
             if (isUncontrolled)
                 agent.speed = maxSpeed * 2f;
@@ -60,8 +60,9 @@ namespace Entities
         {
             if (CurrentDestination == null)
             {
-                Debug.LogError("Error: Current destination is null when " +
-                    "entering destination.");
+                /*Debug.LogError("Error: Current destination is null when " +
+                    "entering destination.");*/
+                Init(GetRandomDestination());
                 return;
             }
 	        

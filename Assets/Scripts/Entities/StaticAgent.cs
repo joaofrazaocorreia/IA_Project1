@@ -11,7 +11,7 @@ namespace Entities
 
         private void Update()
         {
-            StateMachine.Update();
+            StateMachine.Update()?.Invoke();
         }
     }
 }

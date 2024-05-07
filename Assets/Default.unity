@@ -1932,6 +1932,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Crosswalk
       objectReference: {fileID: 0}
+    - target: {fileID: 2797185701293566818, guid: 7d97d9cd68afeff4690ab932426e9ada, type: 3}
+      propertyPath: timeBeforeStateChange
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 7303255955627725294, guid: 7d97d9cd68afeff4690ab932426e9ada, type: 3}
       propertyPath: m_Camera
       value: 
@@ -2704,6 +2708,10 @@ PrefabInstance:
     - target: {fileID: 1726103740963960710, guid: 7d97d9cd68afeff4690ab932426e9ada, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 94.625
+      objectReference: {fileID: 0}
+    - target: {fileID: 2797185701293566818, guid: 7d97d9cd68afeff4690ab932426e9ada, type: 3}
+      propertyPath: timeBeforeStateChange
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7303255955627725294, guid: 7d97d9cd68afeff4690ab932426e9ada, type: 3}
       propertyPath: m_Camera

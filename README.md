@@ -3,25 +3,24 @@
 ## Autores
 #### Daniela Dantas, a22202104
 - Criou o mapa da simulação;
-- Implementou os Behaviors dos NPCs;
-- [etc]
+- Implementou os Behaviors dos Agentes;
 
 #### João Correia, a22202506
 - Efetuou a pesquisa de artigos sobre a simulação de tráfego urbano;
-- Escreveu o Relatório;
-- [etc]
+- Escreveu o Relatório e os diagramas;
+- Implementou o estado de descontrolo dos Agentes;
 
 ## Introdução
 Este projeto visou criar e simular um modelo de trânsito urbano que retrata realisticamente o trânsito pedonal e de veículos em ambiente citadino, com o objetivo de observar os comportamentos e interações que os vários agentes da simulação têm entre si, enquanto mantendo um ambiente ordenado e regulamentado (seguindo e obedecendo a regras impostas, como sinais ou passadeiras). Prentendeu-se também observar estas interações num ambiente mais caótico, implementando um estado de descontrolo de agentes que pode ser manualmente ativado pelo utilizador da simulação, com a intenção de examinar o comportamento dos restantes agentes perante outros que estejam descontrolados, os quais quebram as regras impostas e causam transtorno aos objetivos como, por exemplo, causando acidentes e bloqueando o acesso a certos destinos no mapa. Por fim, pretendeu-se também conseguir que os agentes da simulação conseguissem re-establecer a normalidade da simulação após qualquer uma destas situações de caos.
 
 Foram estudados vários artigos e documentos acerca do tema de simulação de tráfego em cidades, nomeadamente 4 artigos com implementações de modelos semelhantes ao deste projeto, que utilizam dados reais de veículos, condutores/passageiros e respetivos comportamentos e rotinas. Esta pesquisa permitiu ter uma referência sólida sobre as técnicas e boas-práticas usadas em projetos e modelos semelhantes, de modo a conseguir uma simulação mais fiel e bem estruturada para a implementação dos requisitos e objetivos impostos para este projeto.
 
-Portanto, para alcançar os objetivos da implementação, programou-se o comportamento de agentes móveis (veículos e peões), os quais se movem entre diversos lugares da cidade, e agentes imóveis (semáforos, sinais de paragem, e passadeiras), que condicionam este movimento. Depois, colocaram-se estes agentes num mapa que simula uma cidade, com vários objetivos e destinos para os agentes móveis se deslocarem, de modo a observar os seus comportamentos e interações com os outros agentes. Por fim, implementou-se o estado de descontrolo, que proporciona os agentes descontrolados a quebrarem as regras dos seus comportamentos, causando caos na simulação. Utilizando vários parâmetros costumizáveis, observou-se o estado da simulação e o comportamento dos agentes, arranjando quaisqueres falhas nos seus raciocínios e garantindo que estes fossem capazes de voltar à normalidade após qualquer acidente ou estado de caos.
+Portanto, para alcançar os objetivos da implementação, programou-se o comportamento de agentes móveis (veículos e peões), os quais se movem entre diversas localizações/objetivos, e agentes imóveis (semáforos), que condicionam este movimento. Depois, colocaram-se estes agentes num mapa que simula uma cidade, com várias localizações e destinos para os agentes móveis se deslocarem, de modo a observar os seus comportamentos e interações com os outros agentes. Por fim, implementou-se o estado de descontrolo, que proporciona os agentes descontrolados a quebrarem as regras dos seus comportamentos, causando caos na simulação. Utilizando vários parâmetros costumizáveis, observou-se o estado da simulação e o comportamento dos agentes, bem como as interações entre sí ao tentarem chegar ao seu destino e ao ficarem descontrolados.
 
-[Resultados Obtidos]
+Infelizmente, não foi possível acabar este projeto a tempo, e devido a um erro no código das localizações, não foi possível simular a entrada dos agentes nos seus destinos, e também não chegou a ser possível programar os estados de acidente, nem a arranjar a influência dos semáforos nos agentes ou a criação de mais agentes estáticos. No final, foi possível observar os agentes a serem inicializados na cidade, saíndo das localizações onde foram inicialmente colocados após o tempo aleatório que cada um escolheu, e a caminharem para casa um dos seus destinos na cidade, ficando lá parados pois não conseguem entrar. Foi também possível observar um estado de caos que se instala ao ativar vários estados de descontrolo nos agentes, causando os veículos a perderem o controlo e os semáforos a alterarem os seus estados com demasiada rapidez.
 
 ## Estado da Arte
-Comparativamente ao objetivo deste projeto, existem vários outros artigos e projetos com temas semelhantes que visam também examinar os comportamentos do trânsito urbano, não só para obter estimativas e conclusões acerca do comportamento de peões e/ou veículos, como também para observar as falhas e as decisões da própria Inteligência Artificial usada nos modelos de simulação, especialmente nesta nova era do mundo em que as técnologias de IA estão a revolucionar-se e a evoluir rápidamente a cada dia que passa. Eis alguns artigos de pesquisa relevantes que foram utilizados como base de estudo e referência para efetuar este projeto:
+Comparativamente ao objetivo deste projeto, existem vários outros artigos e projetos com temas semelhantes que visaram também examinar os comportamentos do trânsito urbano, não só para obter estimativas e conclusões acerca do comportamento de peões e/ou veículos, como também para observar as falhas e as decisões da própria Inteligência Artificial usada nos modelos de simulação, especialmente nesta nova era do mundo em que as técnologias de IA estão a revolucionar-se e a evoluir rápidamente a cada dia que passa. Eis alguns artigos de pesquisa relevantes que foram utilizados como base de estudo e referência para efetuar este projeto:
 
 #### ["An Overview of Agent-Based Models for Transport Simulation and Analysis"](https://doi.org/10.1155/2022/1252534)
 ###### por Jiangyan Huang, Youkai Cui, Lele Zhang, Weiping Tong, Yunyang Shi e Zhiyuan Liu
@@ -48,15 +47,15 @@ Tendo em conta as previsões de crescimento da população a nível mundial, est
 Como a implementação deste modelo foi feita em Unity3D, que é o mesmo engine usado para o desenvolvimento deste projeto, este artigo revela ser uma referência extremamente importante para a sua realização, pois os autores explicam com detalhe as técnicas que usaram para a implementação do seu modelo. Os dados dos comportamentos dos agentes em situações de tráfego elevado com bastantes agentes revela-se também importante para a implementação dos comportamentos dos veículos no modelo deste projeto, pois alguns dos parâmetros que se tencionam atingir é conseguir ter um elevado número de agentes na simulação e/ou tê-los em um estado de caos e descontrolo, portanto a implementação neste artigo é uma referência muito útil para este trabalho.
 
 ## Metodologia
-Este projeto foi implementado em Unity em 3D, tendo-se usando um mapa simples que contém apenas passeios, estradas e localizações (edifícios, parques, garagens, etc...). Criaram-se várias classes para o efeito, sendo estas a classe "Agent", que determina os agentes da simulação, a classe "Destination", que determina os vários objetivos para os quais os agentes móveis se deslocam, e as classes "RoadWaypoint", "RoadConnector" e "Crosswalk", as quais são usadas para construir as estradas do mapa, ligando os pedaços de estrada e definindo passadeiras de peões.
+Este projeto foi implementado em Unity em 3D, tendo-se usando um mapa simples que contém apenas passeios, estradas, e localizações (edifícios), usando assets da Unity Asset Store (ver Referências). Criaram-se várias classes para o efeito, sendo estas a classe "Agent", que determina os agentes da simulação, a classe "Destination", que determina os vários objetivos para os quais os agentes móveis se deslocam, e as classes "RoadWaypoint", "RoadConnector" e "Crosswalk", as quais são usadas para construir as estradas do mapa, ligando os pedaços de estrada e definindo passadeiras de peões.
 
-A classe "Destination" contém uma lista para guardar todos os agentes presentes dentro do destino, e guarda também as posições dos pontos de saída dos mesmos. Esta classe garda referências a componentes de TextMeshPRO para se visualizar durante a simulação o número total de cada tipo de agentes acima de cada destino, e contém também métodos para adicionar e remover agentes do destino (para adicioná-los à lista de agentes lá dentro e desativar o respetivo agente na simulação, e para removê-los da lista e ativar o agente novamente, movendo-o para a sua posição de saída).
+A classe "Destination" contém uma lista para guardar todos os agentes presentes dentro do destino, e guarda também as posições dos pontos de saída dos mesmos. Esta classe guarda referências a componentes de TextMeshPRO para se visualizar durante a simulação o número total de cada tipo de agentes acima de cada destino, e contém também métodos para adicionar e remover agentes do destino (para adicioná-los à lista de agentes lá dentro e desativar o respetivo agente na simulação, e para removê-los da lista e ativar o agente novamente, movendo-o para a sua posição de saída). Infelizmente houve um erro não-detetado que impede o funcionamento da entrada de agentes nos seus destinos, pelo que após chegarem ao mesmo, os agentes ficam lá parados.
 
-A classe "Agent" é uma classe-base vazia, determinando apenas o que é um agente na simulação. Para criar os diferentes tipos de agentes, esta classe foi extendida por duas subclasses: "MobileAgent" e "StaticAgent". Estas separam e definem os agentes que se movem no mapa e os que permanecem no mesmo local, respetivamente, e também estas subclasses froam extendidas para criar os diferentes agentes de cada tipo, tendo as classes "Pedestrian" e "Vehicle" extendido "MobileAgent" para determinar os peões e os veículos, e a classe "TrafficLight" extendido "StaticAgent" para determinar os semáforos. Por fim, criou-se a interface "ITrafficLightListener" para definir quais dos outros agentes verificam o estado dos semáforos na sua proximidade, nesta caso afetando apenas os peões e os veículos. O seguinte diagrama de classes ilustra este procedimento:
+A classe "Agent" é uma classe-base que determina apenas o que é um agente na simulação. Para criar os diferentes tipos de agentes, esta classe foi extendida por duas subclasses: "MobileAgent" e "StaticAgent". Estas separam e definem os agentes que se movem no mapa e os que permanecem no mesmo local, respetivamente, e também estas subclasses froam extendidas para criar os diferentes agentes de cada tipo, tendo as classes "Pedestrian" e "Vehicle" extendido "MobileAgent" para determinar os peões e os veículos, e a classe "TrafficLight" extendido "StaticAgent" para determinar os semáforos. Por fim, criou-se a interface "ITrafficLightListener" para definir quais dos outros agentes verificam o estado dos semáforos na sua proximidade, nesta caso afetando apenas os peões e os veículos. O seguinte diagrama de classes ilustra este procedimento:
 
 ![Diagrama de Classes da classe Agent](https://i.postimg.cc/L644gPKt/Agent-Class-Diagram-drawio.png)
 
-De seguida, adicionaram-se as árvores de comportamento de cada agente, bem como um estado de "descontrolo" que aumenta a probabilidade de o agente afetado não seguir as regras e causar caos na simulação. O comportamento dos agentes móveis é simples: movem-se entre objetivos, escolhidos aleatóriamente e um de cada vez, e após chegar ao destino, entram nele e permanecem lá durante algum tempo aleatório, com um máximo de tempo definido por outra classe que contém os parâmetros da simulação. Quando esse tempo acaba, os agentes saem desse destino e escolhem um novo objetivo para se deslocarem, diferente do último (para impedir que o agente escolha deslocar-se para o local de onde acabou de sair). Pelo caminho, os agentes respeitam sinais de trânsito, semáforos e passadeiras, e evitam colidir entre sí (havendo maior tolerância em colisões entre peões), porém os agentes têm uma maior chance de ignorar estas regras caso estejam "descontrolados", o que pode causar acidentes e causar a imobilização dos agentes afetados durante um período de tempo aleatório, cujo máximo de tempo é também definido pela outra classe anteriormente referida. Já os agentes estáticos apenas alternam entre os seus diferentes estados possíveis, caso existam (por exemplo, os semáforos alternam entre as suas cores, mas os sinais são sempre iguais). Para distinguir os estados dos semáforos, criou-se a enumeração "TrafficColors" com as diferentes cores do semáforo.
+De seguida, adicionaram-se as árvores de comportamento de cada agente, bem como um estado de "descontrolo" na classe-base, que altera as decisões do agente afetado para não seguir as regras, causando caos na simulação. O comportamento dos agentes móveis é simples: movem-se entre objetivos, escolhidos aleatóriamente e um de cada vez, e após chegar ao destino, deveriam entram nele e permanecem lá durante algum tempo aleatório, com um máximo de tempo definido por outra classe que contém os parâmetros da simulação (mas esta funcionalidade não foi terminada e de momento não funciona). Quando esse tempo acaba, os agentes saem desse destino e escolhem um novo objetivo para se deslocarem. Pelo caminho, os agentes evitam colidir entre sí, porém os agentes conseguem ignorar estas regras caso estejam "descontrolados", causando acidentes, o que deveria levar à imobilização dos agentes afetados durante um período de tempo aleatório, cujo máximo de tempo é também definido pela outra classe anteriormente referida (esta funcionalidade também acabou por não ser implementada). Já os agentes estáticos apenas alternam entre os seus diferentes estados possíveis após certos intervalos de tempo (neste caso, os semáforos alternam entre as suas cores). Para distinguir os estados dos semáforos, criou-se a enumeração "TrafficColors" com as diferentes cores do semáforo.
 
 ![](https://i.postimg.cc/9MNbPTgD/Pedestrian-Behaviour-Tree-drawio.png)
 ![](https://i.postimg.cc/9F2bdWJt/Vehicle-Behaviour-Tree-drawio.png)
@@ -75,21 +74,11 @@ Por fim, para inicializar e gerir os pârametros principais da simulação, crio
 | accidentMaxTime | Define o tempo máximo que um agente pode ficar parado após um acidente. |
 | uncontrolledMaxTime | Define o tempo máximo que um agente pode ficar no estado de "descontrolo". |
 
-Ao iniciar a simulação, esta classe inicializa o número definido de cada tipo de agente e coloca-os aleatóriamente dentro dos vários destinos, e depois encarrega-se de gerir quanto tempo os vários agentes demoram a mudar de estados. Os agentes verificam este tempo através da classe SimulationManager, portanto os parâmetros podem ser alterados durante a simulação para alterar em tempo real essas durações em todos os agentes.
+Ao iniciar a simulação, esta classe inicializa o número definido de cada tipo de agente e coloca-os aleatóriamente dentro dos vários destinos, e depois encarrega-se de gerir a mudança de estado dos agentes para o estado de descontrolo quando um botão é pressionado durante o decorrer da simulação. Os agentes também usam a classe SimulationManager para verificar o tempo que demoram a ficar nos seus estados, portanto os parâmetros podem ser alterados durante a simulação para alterar em tempo real essas durações em todos os agentes.
 
 ## Resultados e discussão
-- Apresentação dos resultados, salientando os aspetos mais interessantes que
-observaram na simulação, em particular se observaram comportamento emergente, isto é, comportamento que não foi explicitamente programado nos agentes.
-- Caso tenham experimentado diferentes parâmetros podem apresentar quadros, tabelas e/ou gráficos com informação que considerem importante e/ou
-interessante.
-- Na parte da discussão, devem fazer uma interpretação dos resultados que
-observaram, realçando quaisquer correlações que tenham encontrado entre
-estes e as parametrizações que definiram, bem como resultados inesperados,
-propondo hipóteses explicativas.
 
-[Resultados observados]
-
-[Interpretação desses resultados]
+Como referido, não houve tempo para terminar todas as funcionalidades do projeto. Porém, com o pouco que foi implementado, alguns comportamentos interessantes foram observados, como por exemplo o facto de os agentes conseguirem evitar o contacto com outros agentes enquanto mantendo a sua rota para o seu destino, causando com que ambos os agentes nessa situação apenas se "desviem" um do outro em vez de se afastarem por completo. A simulação em sí também aparenta aguentar um elevado número de agentes, embora não haja bastante espaço para permitir o movimento de todos os agentes a um certo ponto, nomeadamente os veículos na estrada.
 
 ## Conclusões
 - Nesta secção devem relacionar o que foi apresentado na introdução, nomeadamente o problema que se propuseram a resolver, com os resultados que
@@ -99,13 +88,20 @@ em cidades.
 com uma boa ideia daquilo que fizeram e descobriram, embora sem saber os
 detalhes.
 
-[Relação dos resultados obtidos com a Introdução]
+Como não foi possível terminar o projeto, não foi possível alcançar o objetivo determinado para este projeto: observar uma simulação realista de agentes numa cidade. É apenas possível observar estes agentes a caminhar para os seus destinos e a interagirem entre sí até lá chegarem, e o caos que se instala no estado de descontrolo.
 
-[Relação com a pesquisa efetuada]
+Nota-se também que não é possível fazer uma boa comparação com os artigos da pesquisa feita, já que este projeto não foi completado.
 
 ## Referências
 
+#### Artigos
 - Da, L., Chu, C., Zhang, W., & Wei, H. (2024, February 9). CityFlowER: An Efficient and Realistic Traffic Simulator with Embedded Machine Learning Models. *Cornell University*. https://doi.org/10.48550/arXiv.2402.06127
 - Gong, S., Dong, X., Wang, K., Lei, B., Jia, Z., Qin, J., Roadknight, C., Liu, Y., & Cao, R. (2023, May 23). Agent-based modelling with geographically weighted calibration for intra-urban activities simulation using taxi GPS trajectories. *International Journal of Applied Earth Observation and Geoinformation*. https://doi.org/10.1016/j.jag.2023.103368
 - Huang, J., Cui, Y., Zhang, L., Tong, W., Shi, Y., & Liu, Z. (2022, February 27). An Overview of Agent-Based Models for Transport Simulation and Analysis. *Journal of Advanced Transportation*. https://doi.org/10.1155/2022/1252534
 - Zeb, A., Khattak, K. S., Ullah, M. R., Khan Z. H., & Gulliver T.A. (2023, March 10). HetroTraffSim: A Macroscopic Heterogeneous Traffic Flow Simulator for Road Bottlenecks. *Future Transportation*. https://doi.org/10.3390/futuretransp3010022
+
+#### Assets Utilizados
+
+- Cube x Cube. (2021, September 2). CubexCube - FREE City Pack I. https://assetstore.unity.com/packages/3d/environments/urban/cubexcube-free-city-pack-i-199815
+- Kajaman. (2018, September 13). Background Car - Free. https://assetstore.unity.com/packages/3d/vehicles/land/background-car-free-87053
+- Quaint Game Studio. (2021, September 29). Low Poly City Pack Collection, 3D Model-Demo. https://assetstore.unity.com/packages/3d/environments/industrial/low-poly-city-pack-collection-3d-model-demo-201466

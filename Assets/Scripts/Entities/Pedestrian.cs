@@ -28,8 +28,8 @@ namespace Entities
         public void Init(Destination destination)
         {
             agent.speed = maxSpeed * .2f;
-            Timer = Timer.Register(SimulationManager.instance.
-                pedestrianDestinationMaxTime, LeaveCurrentDestination);
+            Timer = Timer.Register(Random.Range(0f, SimulationManager.instance.
+                pedestrianDestinationMaxTime), LeaveCurrentDestination);
             
             isOnDestination = true;
             CurrentDestination = destination;
@@ -50,8 +50,9 @@ namespace Entities
         {
             if (CurrentDestination == null)
             {
-                Debug.LogError("Error: Current destination is null when " +
-                    "entering destination.");
+                /*Debug.LogError("Error: Current destination is null when " +
+                    "entering destination.");*/
+                GetRandomDestination();
                 return;
             }
 	        

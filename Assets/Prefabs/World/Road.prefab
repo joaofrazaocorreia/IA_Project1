@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4511244407960092526}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Connections
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 8306701093301322603}
   - component: {fileID: 1409874072993170217}
   - component: {fileID: 3125842932817526730}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 0
   m_TagString: Connector
   m_Icon: {fileID: 0}
@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 191783776082348900}
   - component: {fileID: 747408128361378877}
   - component: {fileID: 5839944634995285658}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 1
   m_TagString: Connector
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1765055211058904873}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Spawn pt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ GameObject:
   - component: {fileID: 6959936622448986301}
   - component: {fileID: 201422678106913323}
   - component: {fileID: 2255616673437688861}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 2
   m_TagString: Connector
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 2869618942076597394}
   - component: {fileID: 7187761704369592433}
   - component: {fileID: 4539792854082107226}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 3
   m_TagString: Connector
   m_Icon: {fileID: 0}
@@ -347,6 +347,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: b70c16700e6eed241bc425b5319ac5af, type: 3}
       propertyPath: m_Name
       value: Road
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: b70c16700e6eed241bc425b5319ac5af, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: b70c16700e6eed241bc425b5319ac5af, type: 3}
       propertyPath: m_TagString

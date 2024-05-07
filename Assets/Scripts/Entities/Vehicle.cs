@@ -33,12 +33,12 @@ namespace Entities
         public void Init(Destination destination)
         {
             Timer = Timer.Register(SimulationManager.instance.vehicleDestinationMaxTime, LeaveCurrentDestination);
-            
-            agent.speed = maxSpeed * .2f;
+
+            agent.speed = maxSpeed;
             CurrentDestination = destination;
             
             agent.enabled = CurrentDestination == null;
-            GetComponent<Renderer>().enabled = CurrentDestination == null;
+            GetComponentInChildren<Renderer>().enabled = CurrentDestination == null;
             
             CurrentDestination.EnterDestination(this);
             _nextDestination = GetRandomDestination();
@@ -64,7 +64,7 @@ namespace Entities
             _nextDestination.EnterDestination(this);
             
             agent.enabled = false;
-            GetComponent<Renderer>().enabled = false;
+            GetComponentInChildren<Renderer>().enabled = false;
 	        
             CurrentDestination = _nextDestination;
             _nextDestination = GetRandomDestination();
@@ -88,7 +88,7 @@ namespace Entities
             _currentRoad.RegisterVehicle(this, true);
 
             agent.enabled = true;
-            agent.speed = Mathf.Min(road.roadSpeedLimit, maxSpeed) * .02f;
+            agent.speed = Mathf.Min(road.roadSpeedLimit, maxSpeed) * .2f;
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Entities
                 Quaternion.identity);
             SetOnRoad(CurrentDestination.vehicleExitPoint);
 
-            GetComponent<Renderer>().enabled = true;
+            GetComponentInChildren<Renderer>().enabled = true;
             
             CurrentDestination.LeaveDestination(this);
 
@@ -139,7 +139,7 @@ namespace Entities
                     {
                         float distanceToDestination = Vector3.Distance(transform.position, _nextDestination.position);
                 
-                        if (distanceToDestination < 1f)
+                        if (distanceToDestination < 3f)
                         {
                             EnterDestination();
                         }

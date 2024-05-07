@@ -14,11 +14,10 @@ namespace Locals
         public TMP_Text vehicleCounter;
         public TMP_Text pedestrianCounter;
         
-        public RoadConnector vehicleExitPoint;
+        public RoadWaypoint vehicleExitPoint;
         public Transform pedestrianExitPoint;
-        
-        private List<Agent> _agentsInside;
-        private int _numberOfAgentsInside;
+
+        private List<Agent> _agentsInside = new();
         
         public Vector3 position => transform.position;
 

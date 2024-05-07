@@ -9,7 +9,6 @@ namespace Locals
     public class RoadConnector : MonoBehaviour
     {
         public RoadWaypoint waypointToConnect { get; set; }
-        
         public RoadConnector[] otherConnections;
         
         /// <summary>

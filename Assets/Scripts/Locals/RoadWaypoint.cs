@@ -9,6 +9,8 @@ namespace Locals
     /// </summary>
     public class RoadWaypoint: MonoBehaviour
     {
+        public Transform vehicleSpawnPt;
+        
         public RoadConnector[] connections;
         public int roadSpeedLimit = 20; //max speed vehicles can circulate at, on this road
 

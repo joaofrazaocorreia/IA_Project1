@@ -13,8 +13,6 @@ namespace Entities
     public class Pedestrian : MobileAgent, ITrafficLightListener
     {
         public bool isOnCrossroad { get; set; }
-        private bool isUncontrolled;
-
         private Vector3 _vel; //navmesh agent's velocity
         private bool _madeDecision; //flag to not repeat DT node checking unnecessarily
         
@@ -22,7 +20,7 @@ namespace Entities
         private IDecisionTreeNode _current;
         
         private Destination _nextDestination;
-        
+
         /// <summary> Sets the speed of the agent to 20% of its maxSpeed,        
         /// registers the timer, and overall initiates the agent.
         /// </summary>

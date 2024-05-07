@@ -30,7 +30,7 @@ namespace Entities
                 "Green", 
                 () => OnEnterState(TrafficColors.Green), 
                 () => OnUpdateState(), 
-                () => OnExitState(TrafficColors.Green)
+                () => OnExitState()
                 );
             
             State orangeState = new State
@@ -38,7 +38,7 @@ namespace Entities
                 "Orange", 
                 () => OnEnterState(TrafficColors.Orange), 
                 () => OnUpdateState(), 
-                () => OnExitState(TrafficColors.Orange)
+                () => OnExitState()
             );
             
             State redState = new State
@@ -46,7 +46,7 @@ namespace Entities
                 "Red", 
                 () => OnEnterState(TrafficColors.Red), 
                 () => OnUpdateState(), 
-                () => OnExitState(TrafficColors.Red)
+                () => OnExitState()
             );
             
             //Init transitions
@@ -68,41 +68,26 @@ namespace Entities
         /// </summary>
         private bool ShouldChangeState()
         {
-            if (_evaluateColor == Color.yellow)
-                return Time.time - _stateEnterTime >= 
-                    timeBeforeStateChange * 0.15f;
+            if(isUncontrolled)
+                return Time.time - _stateEnterTime >= 0.15;
 
             else
-                return Time.time - _stateEnterTime >= timeBeforeStateChange;
+            {
+                if (_evaluateColor == Color.yellow)
+                    return Time.time - _stateEnterTime >= 
+                        timeBeforeStateChange * 0.15f;
+
+                else
+                    return Time.time - _stateEnterTime >= timeBeforeStateChange;
+            }
         }
 
         /// <summary>
         /// Called when the state machine exits a state.
         /// </summary>
-        private void OnExitState(TrafficColors trafficColor)
+        private void OnExitState()
         {
-            /*if (trafficColor == TrafficColors.Orange)
-            {
-                StartCoroutine(Blink(3));
-            }*/
-        }
-
-        /// <summary>
-        /// Blinks the signal light a number of times, to simulate real life 
-        /// orange light behaviour.
-        /// </summary>        
-        /// <param name="int times"> The number of times the light will blink.
-        /// </param>
-        private IEnumerator Blink(int times)
-        {
-            for (int i = 0; i < times; i++)
-            {
-                signal.enabled = !signal.enabled;
-                yield return new WaitForSeconds(0.2f);
-            }
-
-            if (!signal.enabled)
-                signal.enabled = true;
+            
         }
 
         /// <summary>
@@ -176,15 +161,31 @@ namespace Entities
         /// </summary>
         private void OnEnterState(TrafficColors trafficColor)
         {
-            _evaluateColor = trafficColor switch
+            if(isUncontrolled)
             {
-                TrafficColors.Green => Color.green,
-                TrafficColors.Orange => Color.yellow,
-                TrafficColors.Red => Color.red,
-                _ => _evaluateColor
-            };
+                signal.color = Random.Range(0, 3) switch
+                {
+                    0 => Color.yellow,
+                    1 => Color.red,
+                    2 => Color.green,
+                    _ => Color.green
+                };
+            }
 
-            signal.color = _evaluateColor;
+            else
+            {    
+                _evaluateColor = trafficColor switch
+                {
+                    TrafficColors.Green => Color.green,
+                    TrafficColors.Orange => Color.yellow,
+                    TrafficColors.Red => Color.red,
+                    _ => _evaluateColor
+                };
+
+                signal.color = _evaluateColor;
+            }
+
+            
         }
     }
 }

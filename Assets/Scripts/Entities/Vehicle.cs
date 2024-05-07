@@ -13,7 +13,6 @@ namespace Entities
     [RequireComponent(typeof(Rigidbody))]
     public class Vehicle : MobileAgent, ITrafficLightListener
     {
-        private bool isUncontrolled;
         public float stopDistance = .25f; //distance to prevent 'hitting' others
         
         private RoadWaypoint _currentRoad;
@@ -36,7 +35,12 @@ namespace Entities
             Timer = Timer.Register(SimulationManager.instance.
                 vehicleDestinationMaxTime, LeaveCurrentDestination);
 
-            agent.speed = maxSpeed;
+            if (isUncontrolled)
+                agent.speed = maxSpeed * 2f;
+
+            else
+                agent.speed = maxSpeed * 0.2f;
+
             CurrentDestination = destination;
             
             agent.enabled = CurrentDestination == null;
@@ -122,9 +126,10 @@ namespace Entities
         }
 
         /// <summary>
-        /// <see cref="Pedestrian.GetRandomDestination"/>
+        /// Chooses a random destination.
         /// </summary>
-        /// <returns>A random Destination.</returns>
+        /// <returns> A random destination from the list of all destinations.
+        /// </returns>
         private Destination GetRandomDestination()
         {
             return SimulationManager.instance.allDestinations[Random.Range(0, 
@@ -139,6 +144,7 @@ namespace Entities
                 {
                     Wait();
                 }
+
                 else
                 {
                     Resume();
@@ -158,29 +164,46 @@ namespace Entities
         }
 
         /// <summary>
-        /// <see cref="Pedestrian.Resume"/>
+        /// Called when the traffic light this vehicle is affected by goes
+        /// 'green'. It sets the agent's velocity to what it was before pausing.
         /// </summary>
         public void Resume()
         {
             _isWaiting = false;
             agent.isStopped = false;
+            
+            if (isUncontrolled)
+                agent.speed = maxSpeed;
         }
 
         /// <summary>
-        /// <see cref="Pedestrian.Wait"/>
-        /// </summary>
+        /// Called when the traffic light this vehicle is affected by goes
+        /// 'red'. Sets the agent's velocity to zero, which causes it to stop
+        /// moving.
+        /// </summary> 
         public void Wait()
         {
-            _isWaiting = true;
-            agent.isStopped = true;
+            if (isUncontrolled)
+                Resume();
+            
+            else
+            {
+                _isWaiting = true;
+                agent.isStopped = true;
+            }
         }
 
         /// <summary>
-        /// <see cref="Pedestrian.SlowDown"/>
+        /// Called when the traffic light this vehicle is affected by goes
+        /// 'orange'. It causes the agent to slow down.
         /// </summary>
         public void SlowDown()
         {
+            if (isUncontrolled)
+                Resume();
 
+            else
+                agent.speed = agent.speed * 0.3f;
         }
         
         /// <summary>
@@ -223,10 +246,14 @@ namespace Entities
                 if (connection.waypointToConnect != _currentRoad)
                 {
                     _currentRoad.RegisterVehicle(this, false);
-                    
-                    agent.speed = Mathf.Min(connection.waypointToConnect.
-                        roadSpeedLimit, maxSpeed) * .2f;
-                        
+
+                    if (isUncontrolled)
+                        agent.speed = maxSpeed;
+
+                    else
+                        agent.speed = Mathf.Min(connection.waypointToConnect.
+                            roadSpeedLimit, maxSpeed) * .2f;
+
                     _currentRoad = connection.waypointToConnect;
                     
                     _currentRoad.RegisterVehicle(this, true);

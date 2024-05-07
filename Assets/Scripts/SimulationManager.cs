@@ -51,7 +51,7 @@ namespace Manager
                 Destination randomDestination = allDestinations[Random.Range(0, allDestinations.Count)];
                 Pedestrian pedestrian = Instantiate(pedestrianPrefab, randomDestination.position, 
                     Quaternion.identity).GetComponent<Pedestrian>();
-                pedestrian.initialDestination = randomDestination;
+                pedestrian.Init(randomDestination);
             }
             
             for (int v = 0; v < numberOfVehicles; v++)
@@ -59,7 +59,7 @@ namespace Manager
                 Destination randomDestination = allDestinations[Random.Range(0, allDestinations.Count)];
                 Vehicle vehicle = Instantiate(vehiclePrefab, randomDestination.position, 
                     Quaternion.identity).GetComponent<Vehicle>();
-                vehicle.initialDestination = randomDestination;
+                vehicle.Init(randomDestination);
             }
         }
     }

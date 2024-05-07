@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using LibGameAI.FSMs;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityTimer;
 
 namespace Entities
 {
@@ -15,12 +14,14 @@ namespace Entities
         public Image signal;
         public float maxDistance;
 
-        private Timer _timeBeforeChange;
         private Color _evaluateColor;
+        
+        private float _stateEnterTime;
+        public float timeBeforeStateChange = 1.5f; // Time for each state in seconds
 
         private void Start()
         {
-            _timeBeforeChange = Timer.Register(.5f, null, isLooped: true);
+            _stateEnterTime = Time.time;
             
             //Init states
 
@@ -50,13 +51,25 @@ namespace Entities
             
             //Init transitions
             
-            greenState.AddTransition(new Transition(() => _timeBeforeChange.isDone, null, orangeState));
-            orangeState.AddTransition(new Transition(() => _timeBeforeChange.isDone, null, redState));
-            redState.AddTransition(new Transition(() => _timeBeforeChange.isDone, null, greenState));
+            greenState.AddTransition(new Transition(ShouldChangeState, () => _stateEnterTime = Time.time, orangeState));
+            orangeState.AddTransition(new Transition(ShouldChangeState, () => _stateEnterTime = Time.time, redState));
+            redState.AddTransition(new Transition(ShouldChangeState, () => _stateEnterTime = Time.time, greenState));
 
             StateMachine = new StateMachine(greenState);
         }
+        
+        /// <summary>
+        /// Checks if the time since entering the current state is greater than or equal
+        /// to the duration of that state.        
+        /// </summary>
+        private bool ShouldChangeState()
+        {
+            return Time.time - _stateEnterTime >= timeBeforeStateChange;
+        }
 
+        /// <summary>
+        /// Called when the state machine exits a state.
+        /// </summary>
         private void OnExitState(TrafficColors trafficColor)
         {
             if (trafficColor == TrafficColors.Orange)
@@ -155,6 +168,8 @@ namespace Entities
                 TrafficColors.Red => Color.red,
                 _ => _evaluateColor
             };
+
+            signal.color = _evaluateColor;
         }
     }
 }

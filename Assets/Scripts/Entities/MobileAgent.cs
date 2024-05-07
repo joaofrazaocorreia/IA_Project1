@@ -40,7 +40,6 @@ namespace Entities
 
         public virtual void Start()
         {
-            CurrentDestination = initialDestination;
             agent.enabled = true;
         }
     }
